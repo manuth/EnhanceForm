@@ -61,7 +61,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
@@ -941,7 +940,8 @@
     <Compile Include="EnhanceForm.Designer.cs">
       <DependentUpon>EnhanceForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MinMaxButton.cs" />
+    <Compile Include="MinButton.cs" />
+    <Compile Include="MaxRestoreButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1045,6 +1045,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Minimize.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Maximize.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Restore.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

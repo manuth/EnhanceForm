@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellExtensions", "Microsof
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhanceForm", "EnhanceForm\EnhanceForm.csproj", "{D76DB67E-E097-4F4D-898F-B9766A0E1C87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhanceFormTest", "EnhanceFormTest\EnhanceFormTest.csproj", "{91214255-D1F8-4658-B431-B5BA4E7E73D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CodeAnalysisDebug|Any CPU = CodeAnalysisDebug|Any CPU
@@ -138,6 +140,24 @@ Global
 		{D76DB67E-E097-4F4D-898F-B9766A0E1C87}.Release|x64.Build.0 = Release|Any CPU
 		{D76DB67E-E097-4F4D-898F-B9766A0E1C87}.Release|x86.ActiveCfg = Release|x86
 		{D76DB67E-E097-4F4D-898F-B9766A0E1C87}.Release|x86.Build.0 = Release|x86
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|Any CPU.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|x64.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|x64.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|x86.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.CodeAnalysisDebug|x86.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|x64.Build.0 = Release|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{91214255-D1F8-4658-B431-B5BA4E7E73D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

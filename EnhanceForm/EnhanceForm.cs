@@ -399,15 +399,22 @@ namespace EnhanceForm
                 X = Width - OutlineSize - closeButton.Width - BorderSizes.Right,
                 Y = OutlineSize
             };
-            Button minMaxButton = new MinMaxButton();
-            minMaxButton.Location = new Point
+            Button maxRestoreButton = new MaxRestoreButton();
+            maxRestoreButton.Location = new Point
             {
-                X = closeButton.Area.X - minMaxButton.Width - 2,
+                X = closeButton.Area.X - maxRestoreButton.Width - 2,
                 Y = OutlineSize
             };
-            minMaxButton.Anchor = closeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Button minButton = new MinButton();
+            minButton.Location = new Point
+            {
+                X = maxRestoreButton.Area.X - minButton.Width - 1,
+                Y = OutlineSize
+            };
+            minButton.Anchor = maxRestoreButton.Anchor = closeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             buttons.Add(closeButton);
-            buttons.Add(minMaxButton);
+            buttons.Add(maxRestoreButton);
+            buttons.Add(minButton);
         }
 
         #endregion
@@ -558,8 +565,11 @@ namespace EnhanceForm
                             case Constants.SpecialButton.Minimize:
                                 command = Constants.SpecialCommands.SC_MINIMIZE;
                                 break;
-                            case Constants.SpecialButton.Maximize:
-                                command = Constants.SpecialCommands.SC_MAXIMIZE;
+                            case Constants.SpecialButton.MaximizeRestore:
+                                if (WindowState == FormWindowState.Maximized)
+                                    command = Constants.SpecialCommands.SC_RESTORE;
+                                else
+                                    command = Constants.SpecialCommands.SC_MAXIMIZE;
                                 break;
                             case Constants.SpecialButton.Help:
                                 command = Constants.SpecialCommands.SC_CONTEXTHELP;
@@ -571,6 +581,7 @@ namespace EnhanceForm
                     }
                 }
                 sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)command, IntPtr.Zero);
+                Invalidate();
             }
         }
 

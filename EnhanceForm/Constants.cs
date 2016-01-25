@@ -258,7 +258,7 @@ namespace EnhanceForm
             None,
             Close,
             Minimize,
-            Maximize,
+            MaximizeRestore,
             Help
         }
     }

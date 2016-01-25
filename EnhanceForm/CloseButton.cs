@@ -30,18 +30,21 @@ namespace EnhanceForm
         {
             Color darkDarkRed = Color.FromArgb(Color.Red.R - 130, Color.Red.G, Color.Red.B);
             Color darkerDarkRed = Color.FromArgb(Color.Red.R - 150, Color.Red.G, Color.Red.B);
-            if (Hovered == ButtonHoverState.Hovered)
+
+            switch (Hovered)
             {
-                e.Graphics.Clear(darkDarkRed);
+                case ButtonHoverState.None:
+                    e.Graphics.Clear(Color.DarkRed);
+                    break;
+                case ButtonHoverState.Hovered:
+                    e.Graphics.Clear(darkDarkRed);
+                    break;
+                case ButtonHoverState.Clicked:
+                    e.Graphics.Clear(darkerDarkRed);
+                    e.Graphics.SetClip(new Rectangle(Location.X + 2, Location.Y + 2, Width - 2, Height - 2));
+                    e.Graphics.Clear(darkDarkRed);
+                    break;
             }
-            else if (Hovered == ButtonHoverState.Clicked)
-            {
-                e.Graphics.Clear(darkerDarkRed);
-                e.Graphics.SetClip(new Rectangle(Location.X + 2, Location.Y + 2, Width - 2, Height - 2));
-                e.Graphics.Clear(darkDarkRed);
-            }
-            else
-                e.Graphics.Clear(Color.DarkRed);
             e.Graphics.DrawImage(Properties.Resources.Close, new PointF
             {
                 X = Location.X + Width / 2 - Properties.Resources.Close.Width / 2 + (Hovered == ButtonHoverState.Clicked ? 2 : 0),
