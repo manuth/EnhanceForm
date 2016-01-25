@@ -10,8 +10,11 @@ namespace EnhanceForm
     /// <summary>
     /// Represents a set of buttons
     /// </summary>
-    public class ButtonCollection : CollectionBase
+    public class ButtonCollection : CollectionBase, IEnumerable<Button>
     {
+        public ButtonCollection()
+        { }
+
         /// <summary>
         /// Returns or sets the element at the specified index
         /// </summary>
@@ -102,6 +105,11 @@ namespace EnhanceForm
         public void Remove(Button item)
         {
             List.Remove(item);
+        }
+
+        IEnumerator<Button> IEnumerable<Button>.GetEnumerator()
+        {
+            return (IEnumerator<Button>)List.GetEnumerator();
         }
     }
 }

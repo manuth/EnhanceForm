@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,11 +28,24 @@ namespace EnhanceForm
         /// <param name="e">The PaintEventArgs of the form's Paint-Event</param>
         public override void Draw(object sender, PaintEventArgs e)
         {
-            e.Graphics.Clear(System.Drawing.Color.DarkRed);
-            e.Graphics.DrawImage(Properties.Resources.Close, new System.Drawing.PointF
+            Color darkDarkRed = Color.FromArgb(Color.Red.R - 130, Color.Red.G, Color.Red.B);
+            Color darkerDarkRed = Color.FromArgb(Color.Red.R - 150, Color.Red.G, Color.Red.B);
+            if (Hovered == ButtonHoverState.Hovered)
             {
-                X = Location.X + Width / 2 - Properties.Resources.Close.Width / 2,
-                Y = Location.Y + Height / 2 - Properties.Resources.Close.Height / 2
+                e.Graphics.Clear(darkDarkRed);
+            }
+            else if (Hovered == ButtonHoverState.Clicked)
+            {
+                e.Graphics.Clear(darkerDarkRed);
+                e.Graphics.SetClip(new Rectangle(Location.X + 2, Location.Y + 2, Width - 2, Height - 2));
+                e.Graphics.Clear(darkDarkRed);
+            }
+            else
+                e.Graphics.Clear(Color.DarkRed);
+            e.Graphics.DrawImage(Properties.Resources.Close, new PointF
+            {
+                X = Location.X + Width / 2 - Properties.Resources.Close.Width / 2 + (Hovered == ButtonHoverState.Clicked ? 2 : 0),
+                Y = Location.Y + Height / 2 - Properties.Resources.Close.Height / 2 + (Hovered == ButtonHoverState.Clicked ? 2 : 0)
             });
         }
     }

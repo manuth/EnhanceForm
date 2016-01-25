@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using System.Drawing.Drawing2D;
+using System.Threading;
 
 namespace EnhanceForm
 {
@@ -47,6 +49,10 @@ namespace EnhanceForm
         /// </summary>
         private Color inlineColor = Color.FromArgb(0x88, 0x88, 0x88, 0x88);
         /// <summary>
+        /// The icon's position
+        /// </summary>
+        private Rectangle iconPosition = new Rectangle(8, 8, 16, 16);
+        /// <summary>
         /// A set of buttons to draw to the border
         /// </summary>
         private ButtonCollection buttons = new ButtonCollection();
@@ -58,29 +64,10 @@ namespace EnhanceForm
         #endregion
         #endregion
 
-        #region Constructors
-
-        public EnhanceForm()
-        {
-            InitializeComponent();
-            tmpSize = ClientRectangle;
-            tmpSize.Location = Location;
-            Button closeButton = new CloseButton();
-            closeButton.Location = new Point
-            {
-                X = Width - 14 - OutlineSize - closeButton.Width - BorderSizes.Right,
-                Y = OutlineSize
-            };
-            closeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            buttons.Add(closeButton);
-        }
-
-        #endregion
-
         #region Properties
         #region Public properties
         
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the thickness of the border")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Padding BorderSizes
@@ -97,7 +84,7 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the color of the border")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color BorderColor
@@ -113,7 +100,7 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the thickness of the form's outline")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int OutlineSize
@@ -133,7 +120,7 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the color of the form's outline")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color OutlineColor
@@ -149,7 +136,7 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the thickness of the form's inline")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public int InlineSize
@@ -166,7 +153,7 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines the color of the form's inline")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public Color InlineColor
@@ -182,7 +169,23 @@ namespace EnhanceForm
             }
         }
 
-        [Category("Frame"), Browsable(true)]
+        [Category("EnhanceForm")]
+        [Description("Defines the position of the icon")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public Rectangle IconPosition
+        {
+            get
+            {
+                return iconPosition;
+            }
+            set
+            {
+                iconPosition = value;
+                Invalidate(true);
+            }
+        }
+
+        [Category("EnhanceForm"), Browsable(true)]
         [Description("Defines a set of buttons to draw to the border")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public ButtonCollection Buttons
@@ -216,16 +219,44 @@ namespace EnhanceForm
             }
         }
 
+        private Rectangle sizingBorder
+        {
+            get
+            {
+                return new Rectangle
+                (
+                    Constants.SizingBorder,
+                    Constants.SizingBorder,
+                    Width - Constants.SizingBorder * 2,
+                    Height - Constants.SizingBorder * 2
+                );
+            }
+        }
+
+        private Rectangle controlBox
+        {
+            get
+            {
+                return new Rectangle
+                (
+                    IconPosition.Right,
+                    0,
+                    Width - IconPosition.Right,
+                    caption.Height
+                );
+            }
+        }
+
         private Rectangle outline
         {
             get
             {
                 return new Rectangle
                 (
-                    OutlineSize / 2,
-                    OutlineSize / 2,
-                    Width - OutlineSize,
-                    Height - OutlineSize
+                    0,
+                    0,
+                    Width,
+                    Height
                 );
             }
         }
@@ -258,6 +289,20 @@ namespace EnhanceForm
             }
         }
 
+        private Rectangle caption
+        {
+            get
+            {
+                return new Rectangle
+                (
+                    outerBorder.X,
+                    outerBorder.Y,
+                    outerBorder.Width,
+                    innerBorder.Y - outerBorder.Y
+                );
+            }
+        }
+
         private Rectangle inline
         {
             get
@@ -282,6 +327,20 @@ namespace EnhanceForm
                     Padding.Top,
                     Padding.Horizontal,
                     Padding.Vertical
+                );
+            }
+        }
+
+        private Rectangle titleBox
+        {
+            get
+            {
+                return Rectangle.FromLTRB
+                (
+                    IconPosition.Right + 5,
+                    0,
+                    Buttons.Max(button => button.Area.Left),
+                    0
                 );
             }
         }
@@ -325,6 +384,34 @@ namespace EnhanceForm
         #endregion
         #endregion
 
+        #region Constructors
+
+        public EnhanceForm()
+        {
+            InitializeComponent();
+            DoubleBuffered = true;
+            MaximizedBounds = Screen.GetWorkingArea(this);
+            tmpSize = ClientRectangle;
+            tmpSize.Location = Location;
+            Button closeButton = new CloseButton();
+            closeButton.Location = new Point
+            {
+                X = Width - OutlineSize - closeButton.Width - BorderSizes.Right,
+                Y = OutlineSize
+            };
+            Button minMaxButton = new MinMaxButton();
+            minMaxButton.Location = new Point
+            {
+                X = closeButton.Area.X - minMaxButton.Width - 2,
+                Y = OutlineSize
+            };
+            minMaxButton.Anchor = closeButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            buttons.Add(closeButton);
+            buttons.Add(minMaxButton);
+        }
+
+        #endregion
+
         #region Methods
         #region Private methods
 
@@ -337,7 +424,11 @@ namespace EnhanceForm
         /// </summary>
         protected virtual void PaintOutline(PaintEventArgs e, Rectangle outline)
         {
-            e.Graphics.DrawRectangle(new Pen(OutlineColor, OutlineSize), outline);
+            Pen outlinePen = new Pen(OutlineColor, OutlineSize);
+            outline.Width -= (outlinePen.Width <= 1 ? 1 : 0);
+            outline.Height -= (outlinePen.Width <= 1 ? 1 : 0);
+            outlinePen.Alignment = PenAlignment.Inset;
+            e.Graphics.DrawRectangle(outlinePen, outline);
         }
 
         /// <summary>
@@ -356,10 +447,147 @@ namespace EnhanceForm
             e.Graphics.DrawRectangle(new Pen(InlineColor, InlineSize), inline);
         }
 
-        protected virtual void NoClientHitTest(ref Message m)
+        /// <summary>
+        /// Draws the form's icon
+        /// </summary>
+        protected virtual void PaintIcon(PaintEventArgs e, Rectangle iconPosition)
         {
-            Constants.NCHitTest noClientPosition;
-            
+            e.Graphics.DrawImage(Icon.ToBitmap(), IconPosition);
+        }
+
+        protected virtual IntPtr NonClientHitTest(IntPtr param)
+        {
+            Constants.NCHitTest nonClientPosition = Constants.NCHitTest.HTCLIENT;
+            Point mousePosition = PointToClient(new Point(param.ToInt32()));
+            if (caption.Contains(mousePosition))
+                nonClientPosition = Constants.NCHitTest.HTCAPTION;
+            if (window.Contains(mousePosition) && !sizingBorder.Contains(mousePosition))
+            {
+                int edge = Padding.Left;
+                if (Padding.Top > edge)
+                    edge = Padding.Top;
+                if (Padding.Right > edge)
+                    edge = Padding.Right;
+                if (Padding.Bottom > edge)
+                    edge = Padding.Bottom;
+
+                if (mousePosition.X < edge)
+                {
+                    if (mousePosition.Y < edge)
+                        nonClientPosition = Constants.NCHitTest.HTTOPLEFT;
+                    else if (mousePosition.Y > Height - edge)
+                        nonClientPosition = Constants.NCHitTest.HTBOTTOMLEFT;
+                    else
+                        nonClientPosition = Constants.NCHitTest.HTLEFT;
+                }
+                else if (mousePosition.X > Width - edge)
+                {
+                    if (mousePosition.Y < edge)
+                        nonClientPosition = Constants.NCHitTest.HTTOPRIGHT;
+                    else if (mousePosition.Y > Height - edge)
+                        nonClientPosition = Constants.NCHitTest.HTBOTTOMRIGHT;
+                    else
+                        nonClientPosition = Constants.NCHitTest.HTRIGHT;
+                }
+            }
+            foreach (Button button in buttons)
+            {
+                if (button.Area.Contains(mousePosition))
+                {
+                    nonClientPosition = Constants.NCHitTest.HTBORDER;
+                    if (!MouseButtons.HasFlag(MouseButtons.Left))
+                        button.Hovered = Button.ButtonHoverState.Hovered;
+                    else
+                        button.Hovered = Button.ButtonHoverState.Clicked;
+                }
+                else
+                    button.Hovered = Button.ButtonHoverState.None;
+            }
+            if (IconPosition.Contains(mousePosition))
+                nonClientPosition = Constants.NCHitTest.HTBORDER;
+            return new IntPtr((int)nonClientPosition);
+        }
+
+        protected virtual void OnNonClientDoubleClick(IntPtr lParam)
+        {
+            Point mousePosition = PointToClient(new Point(lParam.ToInt32()));
+            if (IconPosition.Contains(mousePosition))
+                sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)Constants.SpecialCommands.SC_CLOSE, IntPtr.Zero);
+        }
+
+        private void OnNonClientLButtonDown(IntPtr lParam)
+        {
+            Point mousePosition = PointToClient(new Point(lParam.ToInt32()));
+            foreach (Button button in buttons)
+            {
+                if (button.Area.Contains(mousePosition))
+                {
+                    button.Hovered = Button.ButtonHoverState.Clicked;
+                }
+            }
+            Invalidate();
+        }
+
+        protected virtual void OnNonClientLButtonUp(IntPtr lParam)
+        {
+            Constants.SpecialCommands command = Constants.SpecialCommands.SC_DEFAULT;
+            Point mousePosition = PointToClient(new Point(lParam.ToInt32()));
+            if (IconPosition.Contains(mousePosition))
+            {
+                Point contextMenuPosition = new Point
+                {
+                    X = MousePosition.X,
+                    Y = MousePosition.Y + 25
+                };
+                IntPtr hWnd = Handle;
+                RECT pos;
+                Utilities.GetWindowRect(hWnd, out pos);
+                IntPtr hMenu = Utilities.GetSystemMenu(hWnd, false);
+                int cmd = Utilities.TrackPopupMenu(hMenu, 0x100, contextMenuPosition.X, contextMenuPosition.Y, 0, hWnd, IntPtr.Zero);
+                if (cmd > 0) Utilities.SendMessage(hWnd, 0x112, (IntPtr)cmd, IntPtr.Zero);
+            }
+            else
+            {
+                foreach (Button button in buttons)
+                {
+                    if (button.Area.Contains(mousePosition))
+                    {
+                        button.Hovered = Button.ButtonHoverState.Hovered;
+                        switch (button.ButtonFunction)
+                        {
+                            case Constants.SpecialButton.Minimize:
+                                command = Constants.SpecialCommands.SC_MINIMIZE;
+                                break;
+                            case Constants.SpecialButton.Maximize:
+                                command = Constants.SpecialCommands.SC_MAXIMIZE;
+                                break;
+                            case Constants.SpecialButton.Help:
+                                command = Constants.SpecialCommands.SC_CONTEXTHELP;
+                                break;
+                            case Constants.SpecialButton.Close:
+                                command = Constants.SpecialCommands.SC_CLOSE;
+                                break;
+                        }
+                    }
+                }
+                sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)command, IntPtr.Zero);
+            }
+        }
+
+        private void OnNonClientRButtonUp(IntPtr lParam)
+        {
+            Point mousePosition = PointToClient(new Point(lParam.ToInt32()));
+            if (controlBox.Contains(mousePosition))
+                sendMessage(Constants.WM_GETSYSMENU, IntPtr.Zero, lParam);
+        }
+
+        /// <summary>
+        /// Sends a message into the message loop.
+        /// </summary>
+        private void sendMessage(int msg, IntPtr wParam, IntPtr lParam)
+        {
+            var message = Message.Create(this.Handle, msg, wParam, lParam);
+            this.WndProc(ref message);
         }
 
         #endregion
@@ -375,7 +603,6 @@ namespace EnhanceForm
         /// </summary>
         protected override void OnPaint(PaintEventArgs e)
         {
-
             // Drawing outline
             PaintOutline(e, outline);
             // Drawing border
@@ -387,13 +614,17 @@ namespace EnhanceForm
             e.Graphics.SetClip(innerBorder);
             e.Graphics.ExcludeClip(clientArea);
             PaintInline(e, inline);
+            e.Graphics.ResetClip();
+            // Drawing button
+            e.Graphics.SetClip(IconPosition);
+            PaintIcon(e, IconPosition);
             // Drawing buttons
             foreach (Button button in buttons)
             {
                 e.Graphics.ResetClip();
                 e.Graphics.SetClip(button.Area);
                 button.Draw(this, e);
-            }
+            }           
         }
 
         /// <summary>
@@ -475,9 +706,7 @@ namespace EnhanceForm
                 // Avoid message processing if the form is maximized
                 // and certain parameteres are given.
                 if (m.Msg == Constants.WM_SYSCOMMAND &&
-                    m.WParam.ToInt32() == Constants.SC_MOVE ||
-                    m.Msg == Constants.WM_NCLBUTTONDOWN &&
-                    m.WParam.ToInt32() == (int)Constants.NCHitTest.HTCAPTION)
+                    m.WParam.ToInt32() == (int)Constants.SpecialCommands.SC_MOVE)
                 {
                     m.Msg = Constants.WM_NULL;
                 }
@@ -493,41 +722,57 @@ namespace EnhanceForm
                         Utilities.DwmSetWindowAttribute(Handle, 2, ref value, 4);
                         MARGINS margins = new MARGINS()
                         {
-                            leftWidth = OutlineSize,
-                            topHeight = OutlineSize,
-                            rightWidth = OutlineSize,
-                            bottomHeight = OutlineSize
+                            leftWidth = 1,
+                            topHeight = 1,
+                            rightWidth = 1,
+                            bottomHeight = 1
                         };
                         Utilities.DwmExtendFrameIntoClientArea(Handle, ref margins);
                         if (!DesignMode)
                             if (m.WParam.Equals(IntPtr.Zero))
                             {
                                 RECT structrect = (RECT)m.GetLParam(typeof(RECT));
-                                Rectangle normalrect = structrect.ToRectangle(); normalrect.Inflate(7, 7);
+                                Rectangle normalrect = structrect.ToRectangle();
+                                normalrect.Inflate(Constants.AeroExtraBorder, Constants.AeroExtraBorder);
                                 Marshal.StructureToPtr(new RECT(normalrect), m.LParam, true);
                             }
                             else
                             {
                                 NCCALCSIZE_PARAMS csp = (NCCALCSIZE_PARAMS)m.GetLParam(typeof(NCCALCSIZE_PARAMS));
-                                Rectangle normalrect = csp.rgrc0.ToRectangle(); normalrect.Inflate(7, 7); csp.rgrc0 = new RECT(normalrect);
+                                Rectangle normalrect = csp.rgrc0.ToRectangle();
+                                normalrect.Inflate(Constants.AeroExtraBorder, Constants.AeroExtraBorder);
+                                csp.rgrc0 = new RECT(normalrect);
                                 Marshal.StructureToPtr(csp, m.LParam, true);
                             }
                         m.Result = IntPtr.Zero;
                     }
+                    break;
+                case Constants.WM_NCLBUTTONDOWN:
+                    OnNonClientLButtonDown(m.LParam);
+                    break;
+                case Constants.WM_NCLBUTTONUP:
+                    OnNonClientLButtonUp(m.LParam);
+                    break;
+                case Constants.WM_NCRBUTTONUP:
+                    OnNonClientRButtonUp(m.LParam);
+                    break;
+                case Constants.WM_NCLBUTTONDBLCLK:
+                    OnNonClientDoubleClick(m.LParam);
                     break;
                 case Constants.WM_NCACTIVATE:
                     formActive = m.WParam.ToInt32() != 0;
                     Invalidate(true);
                     break;
                 case Constants.WM_NCHITTEST:
-                    NoClientHitTest(ref m);
-                    if (buttons[0].Area.Contains(PointToClient(MousePosition)))
-                        m.Result = new IntPtr((int)Constants.NCHitTest.HTCLOSE);
+                    m.Result = NonClientHitTest(m.LParam);
                     break;
                 case Constants.WM_NCMOUSEMOVE:
+                    Invalidate();
                     break;
-                default:
-                    base.WndProc(ref m);
+                case Constants.WM_NCMOUSELEAVE:
+                    foreach (Button button in buttons)
+                        button.Hovered = Button.ButtonHoverState.None;
+                    Invalidate();
                     break;
             }
         }

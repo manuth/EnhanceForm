@@ -37,6 +37,15 @@ namespace EnhanceForm
         [DllImport("user32.dll", ExactSpelling = true)]
         public static extern IntPtr GetDCEx(IntPtr hWnd, IntPtr hrgnClip, int flags);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("user32.dll")]
+        public static extern int TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int nReserved, IntPtr hWnd, IntPtr prcRect);
+
         public static bool AeroEnabled
         {
             get

@@ -32,7 +32,7 @@ namespace EnhanceForm
         /// <summary>
         /// A value which describes whether the button is hovered
         /// </summary>
-        private bool hovered = false;
+        private ButtonHoverState hovered = ButtonHoverState.None;
 
         /// <summary>
         /// Inizializes a button which can be drawn to the border
@@ -130,7 +130,7 @@ namespace EnhanceForm
         /// <summary>
         /// Returns or sets a value which describes whether the button is hovered
         /// </summary>
-        public bool Hovered
+        public ButtonHoverState Hovered
         {
             get
             {
@@ -148,5 +148,12 @@ namespace EnhanceForm
         /// <param name="sender">The form which contains the button</param>
         /// <param name="e">The PaintEventArgs of the form's Paint-Event</param>
         public abstract void Draw(object sender, PaintEventArgs e);
+
+        public enum ButtonHoverState
+        {
+            None,
+            Hovered,
+            Clicked
+        }
     }
 }
