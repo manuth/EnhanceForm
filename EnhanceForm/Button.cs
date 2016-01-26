@@ -25,7 +25,7 @@ namespace EnhanceForm
         {
             X = 0,
             Y = 0,
-            Width = 40,
+            Width = 45,
             Height = 20
         };
 

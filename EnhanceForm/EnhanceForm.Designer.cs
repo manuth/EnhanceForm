@@ -44,6 +44,7 @@
             this.ClientSize = new System.Drawing.Size(300, 300);
             this.Controls.Add(this.MainContainer);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.MinimumSize = new System.Drawing.Size(171, 39);
             this.Name = "EnhanceForm";
             this.Padding = new System.Windows.Forms.Padding(1);
             this.ResumeLayout(false);

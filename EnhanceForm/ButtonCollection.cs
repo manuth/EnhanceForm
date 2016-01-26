@@ -109,7 +109,7 @@ namespace EnhanceForm
 
         IEnumerator<Button> IEnumerable<Button>.GetEnumerator()
         {
-            return (IEnumerator<Button>)List.GetEnumerator();
+            return InnerList.Cast<Button>().GetEnumerator();
         }
     }
 }

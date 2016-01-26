@@ -60,6 +60,14 @@ namespace EnhanceForm
         /// A value which defines whether the form is active
         /// </summary>
         private bool formActive = false;
+        /// <summary>
+        /// The font of the form title
+        /// </summary>
+        private Font titleFont = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+        /// <summary>
+        /// The color of the form title
+        /// </summary>
+        private Color titleFontColor = Color.White;
 
         #endregion
         #endregion
@@ -201,6 +209,38 @@ namespace EnhanceForm
             }
         }
 
+        [Category("Darstellung"), Browsable(true)]
+        [Description("Defines the font of the form-title")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public Font TitleFont
+        {
+            get
+            {
+                return titleFont;
+            }
+            set
+            {
+                titleFont = value;
+                Invalidate(true);
+            }
+        }
+
+        [Category("Darstellung"), Browsable(true)]
+        [Description("Defines the color of the form-title")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public Color TitleFontColor
+        {
+            get
+            {
+                return titleFontColor;
+            }
+            set
+            {
+                titleFontColor = value;
+                Invalidate(true);
+            }
+        }
+
         #endregion
 
         #region Private properties
@@ -338,9 +378,9 @@ namespace EnhanceForm
                 return Rectangle.FromLTRB
                 (
                     IconPosition.Right + 5,
-                    0,
-                    Buttons.Max(button => button.Area.Left),
-                    0
+                    OutlineSize,
+                    Buttons.Min(button => button.Area.Left),
+                    BorderSizes.Top
                 );
             }
         }
@@ -390,13 +430,12 @@ namespace EnhanceForm
         {
             InitializeComponent();
             DoubleBuffered = true;
-            MaximizedBounds = Screen.GetWorkingArea(this);
             tmpSize = ClientRectangle;
             tmpSize.Location = Location;
             Button closeButton = new CloseButton();
             closeButton.Location = new Point
             {
-                X = Width - OutlineSize - closeButton.Width - BorderSizes.Right,
+                X = Width - OutlineSize - closeButton.Width - BorderSizes.Right - 2 * Constants.AeroExtraBorder,
                 Y = OutlineSize
             };
             Button maxRestoreButton = new MaxRestoreButton();
@@ -495,6 +534,13 @@ namespace EnhanceForm
                         nonClientPosition = Constants.NCHitTest.HTBOTTOMRIGHT;
                     else
                         nonClientPosition = Constants.NCHitTest.HTRIGHT;
+                }
+                else
+                {
+                    if (mousePosition.Y < edge)
+                        nonClientPosition = Constants.NCHitTest.HTTOP;
+                    else if (mousePosition.Y > Height - edge)
+                        nonClientPosition = Constants.NCHitTest.HTBOTTOM;
                 }
             }
             foreach (Button button in buttons)
@@ -609,6 +655,12 @@ namespace EnhanceForm
 
         #region Overridden Methods
 
+        protected override void OnLoad(EventArgs e)
+        {
+            MaximizedBounds = Screen.GetWorkingArea(this);
+            base.OnLoad(e);
+        }
+
         /// <summary>
         /// Drawing stuff
         /// </summary>
@@ -635,7 +687,21 @@ namespace EnhanceForm
                 e.Graphics.ResetClip();
                 e.Graphics.SetClip(button.Area);
                 button.Draw(this, e);
-            }           
+            }
+            string title = Text;
+            Size textSize = new Size();
+            if ((textSize = TextRenderer.MeasureText(title, TitleFont)).Width > titleBox.Width)
+            {
+                while ((textSize = TextRenderer.MeasureText(title + "…", TitleFont)).Width > titleBox.Width && title.Length > 0)
+                {
+                    title = title.Remove(title.Length - 1);
+                }
+                if (title.Length > 0)
+                    title += "…";
+            }
+            e.Graphics.ResetClip();
+            e.Graphics.SetClip(titleBox);
+            e.Graphics.DrawString(title, TitleFont, new SolidBrush(TitleFontColor), titleBox.X + titleBox.Width / 2 - textSize.Width / 2, titleBox.Y + titleBox.Height / 2 - textSize.Height / 2);
         }
 
         /// <summary>
