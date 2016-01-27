@@ -16,10 +16,5 @@ namespace EnhanceFormTest
         {
             InitializeComponent();
         }
-        
-        private void button1_Click_2(object sender, EventArgs e)
-        {
-            MaximumSize = Screen.GetWorkingArea(this).Size;
-        }
     }
 }

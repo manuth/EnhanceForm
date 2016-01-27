@@ -59,7 +59,7 @@ namespace EnhanceForm
         /// <summary>
         /// The taskbar-progressbar-style
         /// </summary>
-        private TaskbarProgressBarState progressState = TaskbarProgressBarState.Normal;
+        private TaskbarProgressBarState progressState = TaskbarProgressBarState.NoProgress;
         /// <summary>
         /// The progress of the taskbar-progressbar
         /// </summary>
