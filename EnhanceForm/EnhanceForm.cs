@@ -228,8 +228,12 @@ namespace EnhanceForm
             }
             set
             {
-                if (Created && !DesignMode)
-                    TaskbarManager.Instance.SetProgressState(value);
+                if (!DesignMode)
+                    try
+                    {
+                        TaskbarManager.Instance.SetProgressState(value);
+                    }
+                    catch { }
                 progressState = value;
             }
         }
@@ -245,8 +249,12 @@ namespace EnhanceForm
             }
             set
             {
-                if (Created && !DesignMode)
-                    TaskbarManager.Instance.SetProgressValue(value, 100);
+                if (!DesignMode)
+                    try
+                    {
+                        TaskbarManager.Instance.SetProgressValue(value, 100);
+                    }
+                    catch { }
                 progressPercentage = value;
             }
         }
@@ -710,10 +718,14 @@ namespace EnhanceForm
 
         protected override void OnInvalidated(InvalidateEventArgs e)
         {
-            if (Created && !DesignMode)
+            if (!DesignMode)
             {
-                TaskbarManager.Instance.SetProgressState(ProgressState);
-                TaskbarManager.Instance.SetProgressValue(ProgressPercentage, 100);
+                try
+                {
+                    TaskbarManager.Instance.SetProgressState(ProgressState);
+                    TaskbarManager.Instance.SetProgressValue(ProgressPercentage, 100);
+                }
+                catch { }
             }
             base.OnInvalidated(e);
         }
@@ -835,7 +847,6 @@ namespace EnhanceForm
 
         protected override void WndProc(ref Message m)
         {
-
             base.WndProc(ref m);
 
             switch (m.Msg)
@@ -899,13 +910,26 @@ namespace EnhanceForm
                         button.Hovered = Button.ButtonHoverState.None;
                     Invalidate();
                     break;
-            }
-            if (m.Msg == Constants.WM_SYSCOMMAND)
-            {
-                if (m.WParam.ToInt32() == (int)Constants.SpecialCommands.SC_MAXIMIZE)
-                {
-                    Size = Screen.GetWorkingArea(this).Size;
-                }
+                case Constants.WM_MOVE:
+                    Rectangle bounds = Screen.GetWorkingArea(this);
+                    bounds.Location = Point.Empty;
+                    MaximizedBounds = bounds;
+                    break;
+                case Constants.WM_SIZE:
+                    if (m.WParam.ToInt32() == 2)
+                    {
+                        if (MaximumSize != Screen.GetWorkingArea(this).Size)
+                        {
+                            sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)Constants.SpecialCommands.SC_RESTORE, IntPtr.Zero);
+                            MaximumSize = Screen.GetWorkingArea(this).Size;
+                            sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)Constants.SpecialCommands.SC_MAXIMIZE, IntPtr.Zero);
+                        }
+                    }
+                    else if (MaximumSize == Screen.GetWorkingArea(this).Size)
+                    {
+                        MaximumSize = Size.Empty;
+                    }
+                    break;
             }
         }
 
