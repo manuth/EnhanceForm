@@ -18,6 +18,10 @@ namespace EnhanceForm
         public const int WM_NULL = 0x0000;
         public const int WM_CREATE = 0x0001;
         public const int WM_MOVE = 0x03;
+        /// <summary>
+        /// Sent to a window after its size has changed.
+        /// </summary>
+        public const int WM_SIZE = 0x0005;
         public const int WM_ACTIVATE = 0x0006;
         public const int WM_PAINT = 0x000F;
         public const int WM_WINDOWPOSCHANGED = 0x0047;

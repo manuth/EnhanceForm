@@ -42,6 +42,8 @@
             this.ClientSize = new System.Drawing.Size(314, 314);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MainForm";
+            this.ProgressPercentage = 50;
+            this.ProgressState = Microsoft.WindowsAPICodePack.Taskbar.TaskbarProgressBarState.Paused;
             this.Text = "Form1";
             this.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ResumeLayout(false);

@@ -45,6 +45,9 @@ namespace EnhanceForm
 
         [DllImport("user32.dll")]
         public static extern int TrackPopupMenu(IntPtr hMenu, uint uFlags, int x, int y, int nReserved, IntPtr hWnd, IntPtr prcRect);
+        
+        [DllImport("user32.dll")]
+        public static extern int FlashWindow(IntPtr Hwnd, bool Revert);
 
         public static bool AeroEnabled
         {

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Windows.Interop;
 using MS.WindowsAPICodePack.Internal;
 using Microsoft.WindowsAPICodePack.Shell.Resources;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.WindowsAPICodePack.Taskbar
 {
@@ -13,6 +14,12 @@ namespace Microsoft.WindowsAPICodePack.Taskbar
     /// </summary>
     public class TaskbarManager
     {
+        /// <summary>
+        /// Makes the taskbar-button flashing
+        /// </summary>
+        [DllImport("user32.dll")]
+        public static extern int FlashWindow(IntPtr Hwnd, bool Revert);
+
         // Hide the default constructor
         private TaskbarManager()
         {

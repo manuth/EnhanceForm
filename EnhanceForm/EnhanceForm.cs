@@ -57,6 +57,14 @@ namespace EnhanceForm
         /// </summary>
         private ButtonCollection buttons = new ButtonCollection();
         /// <summary>
+        /// The taskbar-progressbar-style
+        /// </summary>
+        private TaskbarProgressBarState progressState = TaskbarProgressBarState.Normal;
+        /// <summary>
+        /// The progress of the taskbar-progressbar
+        /// </summary>
+        private int progressPercentage = 0;
+        /// <summary>
         /// A value which defines whether the form is active
         /// </summary>
         private bool formActive = false;
@@ -206,6 +214,40 @@ namespace EnhanceForm
             {
                 buttons = value;
                 Invalidate(true);
+            }
+        }
+
+        [Category("EnhanceForm"), Browsable(true)]
+        [Description("Defines the form's progress-state")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public TaskbarProgressBarState ProgressState
+        {
+            get
+            {
+                return progressState;
+            }
+            set
+            {
+                if (Created && !DesignMode)
+                    TaskbarManager.Instance.SetProgressState(value);
+                progressState = value;
+            }
+        }
+
+        [Category("EnhanceForm"), Browsable(true)]
+        [Description("Defines the form's progress-percentage")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public int ProgressPercentage
+        {
+            get
+            {
+                return progressPercentage;
+            }
+            set
+            {
+                if (Created && !DesignMode)
+                    TaskbarManager.Instance.SetProgressValue(value, 100);
+                progressPercentage = value;
             }
         }
 
@@ -379,7 +421,7 @@ namespace EnhanceForm
                 (
                     IconPosition.Right + 5,
                     OutlineSize,
-                    Buttons.Min(button => button.Area.Left),
+                    Buttons.Count > 0 ? Buttons.Min(button => button.Area.Left) : Width - OutlineSize,
                     BorderSizes.Top
                 );
             }
@@ -435,7 +477,7 @@ namespace EnhanceForm
             Button closeButton = new CloseButton();
             closeButton.Location = new Point
             {
-                X = Width - OutlineSize - closeButton.Width - BorderSizes.Right - 2 * Constants.AeroExtraBorder,
+                X = Width - OutlineSize - closeButton.Width - BorderSizes.Right - (Utilities.AeroEnabled ? 2 * Constants.AeroExtraBorder : 0),
                 Y = OutlineSize
             };
             Button maxRestoreButton = new MaxRestoreButton();
@@ -651,6 +693,11 @@ namespace EnhanceForm
 
         #region Public methods
 
+        public void FlashTaskbar(bool Revert)
+        {
+            Utilities.FlashWindow(Handle, Revert);
+        }
+
         #endregion
 
         #region Overridden Methods
@@ -659,6 +706,16 @@ namespace EnhanceForm
         {
             MaximizedBounds = Screen.GetWorkingArea(this);
             base.OnLoad(e);
+        }
+
+        protected override void OnInvalidated(InvalidateEventArgs e)
+        {
+            if (Created && !DesignMode)
+            {
+                TaskbarManager.Instance.SetProgressState(ProgressState);
+                TaskbarManager.Instance.SetProgressValue(ProgressPercentage, 100);
+            }
+            base.OnInvalidated(e);
         }
 
         /// <summary>
@@ -778,16 +835,7 @@ namespace EnhanceForm
 
         protected override void WndProc(ref Message m)
         {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // Avoid message processing if the form is maximized
-                // and certain parameteres are given.
-                if (m.Msg == Constants.WM_SYSCOMMAND &&
-                    m.WParam.ToInt32() == (int)Constants.SpecialCommands.SC_MOVE)
-                {
-                    m.Msg = Constants.WM_NULL;
-                }
-            }
+
             base.WndProc(ref m);
 
             switch (m.Msg)
@@ -851,6 +899,13 @@ namespace EnhanceForm
                         button.Hovered = Button.ButtonHoverState.None;
                     Invalidate();
                     break;
+            }
+            if (m.Msg == Constants.WM_SYSCOMMAND)
+            {
+                if (m.WParam.ToInt32() == (int)Constants.SpecialCommands.SC_MAXIMIZE)
+                {
+                    Size = Screen.GetWorkingArea(this).Size;
+                }
             }
         }
 
