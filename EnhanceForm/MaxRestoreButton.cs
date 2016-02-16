@@ -9,6 +9,11 @@ namespace EnhanceForm
 {
     public class MaxRestoreButton : Button
     {
+        public MaxRestoreButton()
+        {
+            Width -= Width / 3;
+        }
+
         public override Constants.SpecialButton ButtonFunction
         {
             get

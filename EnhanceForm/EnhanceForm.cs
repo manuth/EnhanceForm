@@ -12,7 +12,7 @@ using System.Configuration;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using System.Drawing.Drawing2D;
 using System.Threading;
-
+using System.Drawing.Design;
 namespace EnhanceForm
 {
     public partial class EnhanceForm : Form
@@ -218,7 +218,7 @@ namespace EnhanceForm
         }
 
         [Category("EnhanceForm"), Browsable(true)]
-        [Description("Defines the form's progress-state")]
+        [Description("Defines the progress-state of the form")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public TaskbarProgressBarState ProgressState
         {
@@ -628,7 +628,7 @@ namespace EnhanceForm
                     button.Hovered = Button.ButtonHoverState.Clicked;
                 }
             }
-            Invalidate();
+            Invalidate(true);
         }
 
         protected virtual void OnNonClientLButtonUp(IntPtr lParam)
@@ -677,7 +677,7 @@ namespace EnhanceForm
                     }
                 }
                 sendMessage(Constants.WM_SYSCOMMAND, (IntPtr)command, IntPtr.Zero);
-                Invalidate();
+                Invalidate(true);
             }
         }
 
@@ -723,7 +723,8 @@ namespace EnhanceForm
                 try
                 {
                     TaskbarManager.Instance.SetProgressState(ProgressState);
-                    TaskbarManager.Instance.SetProgressValue(ProgressPercentage, 100);
+                    if (ProgressState != TaskbarProgressBarState.Indeterminate)
+                        TaskbarManager.Instance.SetProgressValue(ProgressPercentage, 100);
                 }
                 catch { }
             }
@@ -903,12 +904,12 @@ namespace EnhanceForm
                     m.Result = NonClientHitTest(m.LParam);
                     break;
                 case Constants.WM_NCMOUSEMOVE:
-                    Invalidate();
+                    Invalidate(true);
                     break;
                 case Constants.WM_NCMOUSELEAVE:
                     foreach (Button button in buttons)
                         button.Hovered = Button.ButtonHoverState.None;
-                    Invalidate();
+                    Invalidate(true);
                     break;
                 case Constants.WM_MOVE:
                     Rectangle bounds = Screen.GetWorkingArea(this);

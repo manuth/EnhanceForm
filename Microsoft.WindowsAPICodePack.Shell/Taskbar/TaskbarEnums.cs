@@ -1,5 +1,7 @@
 ﻿//Copyright (c) Microsoft Corporation.  All rights reserved.
 
+using System;
+
 namespace Microsoft.WindowsAPICodePack.Taskbar
 {
 
@@ -35,6 +37,7 @@ namespace Microsoft.WindowsAPICodePack.Taskbar
     /// <summary>
     /// Represents the thumbnail progress bar state.
     /// </summary>
+    [Flags]
     public enum TaskbarProgressBarState
     {
         /// <summary>

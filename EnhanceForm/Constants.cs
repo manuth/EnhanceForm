@@ -61,6 +61,7 @@ namespace EnhanceForm
         public const int DCX_INTERSECTUPDATE = 0x00000200;
         public const int DCX_VALIDATE = 0x00200000;
 
+        [Flags]
         public enum SpecialCommands : int
         {
             /// <summary>
@@ -148,6 +149,7 @@ namespace EnhanceForm
             SC_VSCROLL = 0xF070
         }
 
+        [Flags]
         public enum NCHitTest : int
         {
             /// <summary>
